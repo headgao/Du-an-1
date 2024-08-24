@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cập nhật dự án</title>
+
+    <style>
+
+        body {
+
+            font-family: 'Times New Roman', Times, serif;
+
+            background-color: #f0f8ff; /* Light blue background for modern feel */
+
+            color: #000;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+        .header {
+
+            background-color: #1e90ff; /* Blue color for the header */
+
+            color: white;
+
+            text-align: center;
+
+            padding: 20px 0;
+
+        }
+
+        .logo {
+
+            font-size: 2em;
+
+            font-weight: bold;
+
+        }
+
+        .content {
+
+            padding: 20px;
+
+        }
+
+        .important {
+
+            font-size: 13px;
+
+        }
+
+        .less-important {
+
+            font-size: 11px;
+
+        }
+
+        .chart-container {
+
+            width: 80%;
+
+            margin: 0 auto;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div class="logo">Đài VTTG</div>
+
+        <h1>Cập nhật dự án</h1>
+
+    </div>
+
+
+
+    <div class="content">
+
+        <p class="important">Dưới đây là biểu đồ cập nhật dữ liệu từ các dự án.</p>
+
+        <p class="less-important">Dữ liệu được lấy từ file Excel được tải lên và biểu diễn trực quan dưới dạng biểu đồ.</p>
+
+
+
+        <div class="chart-container">
+
+            <canvas id="myChart"></canvas>
+
+        </div>
+
+
+
+        <input type="file" id="fileInput" accept=".xlsx" />
+
+    </div>
+
+
+
+    <!-- Include Chart.js library -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Include XLSX library -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+    <script>
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+
+            var file = e.target.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+
+                var data = new Uint8Array(event.target.result);
+
+                var workbook = XLSX.read(data, {type: 'array'});
+
+                var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                var jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+
+                createChart(jsonData);
+
+            };
+
+            reader.readAsArrayBuffer(file);
+
+        });
+
+
+
+        function createChart(data) {
+
+            var ctx = document.getElementById('myChart').getContext('2d');
+
+            var labels = data.slice(1).map(row => row[0]); // Lấy cột đầu tiên làm nhãn
+
+            var values = data.slice(1).map(row => row[1]); // Lấy cột thứ hai làm dữ liệu
+
+
+
+            new Chart(ctx, {
+
+                type: 'bar',
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [{
+
+                        label: 'Dữ liệu dự án',
+
+                        data: values,
+
+                        backgroundColor: '#1e90ff',
+
+                        borderColor: '#1e90ff',
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>
